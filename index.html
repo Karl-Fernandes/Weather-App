@@ -93,14 +93,19 @@
 
                 document.querySelector(".error").style.display = "none"; // hide error message
                 document.querySelector(".weather").style.display = "block"; // show weather info
+                
+                localStorage.setItem('lastLocation', location); // save location to localStorage
             } catch (error) {
                 document.querySelector(".error").style.display = "block"; // show error message
                 document.querySelector(".weather").style.display = "none"; // hide weather info
             }
         }
 
-        // Call checkWeather with default location 'London' when the page loads
-        window.onload = () => checkWeather();
+        // Call checkWeather with the last searched location or default location 'London' when the page loads
+        window.onload = () => {
+            const lastLocation = localStorage.getItem('lastLocation') || 'London';
+            checkWeather(lastLocation);
+        };
     </script>
 </body>
 </html>
