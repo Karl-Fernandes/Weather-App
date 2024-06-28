@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Karl's Weather App</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .weather, .error {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <section class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter location: " spellcheck="false" id="location">
+            <button type="button" onclick="checkWeather()"> 
+                <img src="images/search.png" alt="Search">
+            </button>
+        </div>
+        <div class="error">
+            <p>Invalid City Name</p>
+        </div>
+        <div class="weather">
+            <img src="images/rain.png" class="weather-icon">
+            <h1 class="temp"></h1>
+            <h2 class="city"></h2>
+            <div class="details">
+                <div class="col">
+                    <img src="images/humidity.png">
+                    <div>
+                        <p class="humidity"></p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="images/wind.png">
+                    <div>
+                        <p class="wind"></p>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        const apiKey = "2a32aa2df549947aab529d8b34e3b3ff";
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&appid=" + apiKey + "&q=";
+
+        async function checkWeather(location = '') {
+            if (location === '') {
+                location = document.getElementById('location').value;
+            }
+            if (location === '') {
+                location = 'London';
+            }
+
+            try {
+                const response = await fetch(apiUrl + location);
+                if (!response.ok) {
+                    throw new Error('City not found');
+                }
+
+                const data = await response.json();
+
+                document.querySelector(".city").innerHTML = data.name;
+                document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+                document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+                document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+                const weatherIcon = document.querySelector(".weather-icon");
+
+                switch (data.weather[0].main) {
+                    case "Clouds":
+                        weatherIcon.src = "images/clouds.png";
+                        break;
+                    case "Clear":
+                        weatherIcon.src = "images/clear.png";
+                        break;
+                    case "Rain":
+                        weatherIcon.src = "images/rain.png";
+                        break;
+                    case "Drizzle":
+                        weatherIcon.src = "images/drizzle.png";
+                        break;
+                    case "Mist":
+                        weatherIcon.src = "images/mist.png";
+                        break;
+                    default:
+                        weatherIcon.src = "images/default.png"; // default icon
+                }
+
+                document.querySelector(".error").style.display = "none"; // hide error message
+                document.querySelector(".weather").style.display = "block"; // show weather info
+            } catch (error) {
+                document.querySelector(".error").style.display = "block"; // show error message
+                document.querySelector(".weather").style.display = "none"; // hide weather info
+            }
+        }
+
+        // Call checkWeather with default location 'London' when the page loads
+        window.onload = () => checkWeather();
+    </script>
+</body>
+</html>
